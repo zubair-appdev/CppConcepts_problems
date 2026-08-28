@@ -469,6 +469,118 @@ int main()
         cout << name1[i] << " " << count1 << endl;
     }
 
+    //Problem 5 : First Non Repeating Character and Repeating Character
+    string place = "swiss";
+    bool noUnique = false;
+
+    for(size_t i=0; i<place.length(); i++)
+    {
+        int countPlace = 0;
+
+        for(size_t j=0; j<place.length(); j++)
+        {
+            if(place[i] == place[j])
+            {
+                countPlace++;
+            }
+        }
+
+//      For First Non Repeating Character
+                if(countPlace == 1)
+                {
+                        noUnique = true;
+                        cout<<place[i]<<" :First Non Repeating Character"<<endl;
+                        break;
+                }
+
+//      For First Repeating Character
+//        if(countPlace >= 2)
+//        {
+//            cout<<place[i]<<" :First Repeating Character"<<endl;
+//            break;
+//        }
+    }
+
+    if(!noUnique)
+        cout<<"No First Non Repeating Characters"<<endl;
+
+    // Problem 5 ended
+
+    //Problem 6 — Remove Duplicate Characters
+    string car = "SwiftDesire";
+    string newCar;
+
+    for(size_t i=0; i<car.length(); i++)
+    {
+        bool check = false;
+
+        for(size_t j=0; j<car.length(); j++)
+        {
+           if(newCar[j] == car[i])
+           {
+               check = true;
+               break;
+           }
+        }
+
+        if(!check)
+            newCar += car[i];
+    }
+
+    cout<<newCar<<" :newCar"<<endl;
+
+    //Problem 7 — Palindrome using two pointers
+    string palindrome = "abba";
+
+    size_t jp = palindrome.length();
+    cout<<jp/2<<" :jp"<<endl;
+    bool checkPalin = true;
+
+    for(size_t i=0; i<palindrome.length()/2; i++)
+    {
+        if(palindrome[i] != palindrome[jp-1])
+        {
+            checkPalin = false;
+            break;
+        }
+        jp--;
+    }
+
+    if(checkPalin)
+        cout<<palindrome<<" :is palindrome"<<endl;
+    else
+        cout<<palindrome<<" :is NOT palindrome"<<endl;
+
+
+    //Problem 8 — Two Sum Using Two Pointers
+    vector<int> v = {1, 2, 3, 4, 6, 8, 9};
+    int targetVal = 17;
+
+    int iterations = 0;
+
+    int jv = v.size() - 1;
+
+    for(size_t i=0; i<v.size(); i++)
+    {
+
+        if(v[i] + v[jv] > targetVal)
+        {
+            jv--;
+        }
+
+        if(v[i] + v[jv] == targetVal)
+        {
+            cout<<"TARGET FOUND "<<v[i]<<" "<<v[jv]<<endl;
+            break;
+        }
+
+        iterations++;
+    }
+
+    cout<<iterations<<" :iterations"<<endl;
+
+    //continue from here ... prove gpt is wrong here for above problem for two pointer.
+
     cout << "END OF MAIN" << endl;
     return 0;
 }
