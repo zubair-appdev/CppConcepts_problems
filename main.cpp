@@ -1,5 +1,12 @@
 #include <iostream>
 #include <vector>
+#include <map>
+#include <cstring>
+#include <thread>
+#include <mutex>
+
+#include <future>
+
 using namespace std;
 
 bool checkPalindrome(string name,int left,int right)
@@ -19,8 +26,340 @@ bool checkPalindrome(string name,int left,int right)
 
 bool findDuplicate(string s);
 
+//Rule Of 5
+class Buffer
+{
+    char *Adata;
+
+public:
+    Buffer(const char *data)
+    {
+        cout<<"ctor called"<<endl;
+        Adata = new char[strlen(data)+1];
+        strcpy(Adata,data);
+    }
+
+    Buffer(const Buffer &other)
+    {
+        cout<<"copy ctor called"<<endl;
+        Adata = new char[strlen(other.Adata)+1];
+        strcpy(Adata,other.Adata);
+    }
+
+    Buffer& operator=(const Buffer &other)
+    {
+        cout<<"copy Assn called"<<endl;
+
+        if(this != &other)
+        {
+            cout<<"CALL"<<endl;
+            delete[] Adata;
+            Adata = new char[strlen(other.Adata)+1];
+            strcpy(Adata,other.Adata);
+        }
+
+        return *this;
+
+    }
+
+    Buffer(Buffer &&other) noexcept
+    {
+        cout<<"Move ctor called"<<endl;
+        Adata = other.Adata;
+        other.Adata = nullptr;
+    }
+
+    Buffer& operator=(Buffer &&other) noexcept
+    {
+        cout<<"MOVE Assn called"<<endl;
+
+        if(this != &other)
+        {
+            delete[] Adata;
+            Adata = other.Adata;
+            other.Adata = nullptr;
+        }
+
+        return *this;
+    }
+
+    ~Buffer()
+    {
+        cout<<"dtor called"<<endl;
+        delete[] Adata;
+
+    }
+
+    void print()
+    {
+        if(Adata != nullptr)
+            cout<<Adata<<" :data"<<endl;
+        else
+            cout<<"null data"<<endl;
+
+    }
+};
+
+//Runtime polymorphism
+class Animal
+{
+public:
+    virtual void speak()
+    {
+        cout<<"Animal Speaks"<<endl;
+    }
+
+    virtual ~Animal()
+    {
+        cout<<"Animal dtor called"<<endl;
+    }
+};
+
+class Cat : public Animal
+{
+public:
+    void speak() override
+    {
+        cout<<"Cat Speaks"<<endl;
+    }
+
+    ~Cat()
+    {
+        cout<<"Cat dtor called"<<endl;
+
+    }
+};
+
+//Composition
+class Engine
+{
+public:
+    void engineStart()
+    {
+        cout<<"engine is starting"<<endl;
+    }
+
+};
+
+class Car
+{
+public:
+    void start()
+    {
+        e1.engineStart();
+        cout<<"Car is starting"<<endl;
+    }
+private:
+    Engine e1;
+};
+
+//DI + Aggregation
+class Energy
+{
+public:
+    void jungleEnergy()
+    {
+        cout<<"Jungle's Energy"<<endl;
+    }
+};
+
+class Lion
+{
+public:
+    void kingOfJungle(Energy *energy)
+    {
+        ene1 = energy;
+        ene1->jungleEnergy();
+        cout<<"Lion is created"<<endl;
+    }
+
+private:
+    Energy *ene1;
+};
+
+// Singleton
+class Singleton{
+public:
+    static Singleton& getInstance()
+    {
+        static Singleton s;
+        return s;
+    }
+
+    void method()
+    {
+        cout<<"singleton's method"<<endl;
+    }
+private:
+    Singleton()
+    {
+        cout<<"Singleton private constructor"<<endl;
+    }
+
+    Singleton(const Singleton& other) = delete;
+    Singleton& operator= (const Singleton& other) = delete;
+};
+
+void printEven(int num)
+{
+    long long sum = 0;
+
+    cout<<this_thread::get_id()<<" :Even thread Id"<<endl;
+    for(int i=0; i<num; i++)
+    {
+        if(i % 2 == 0)
+        {
+            sum += i;
+        }
+    }
+}
+
+void printOdd(int num)
+{
+    long long sum = 0;
+
+    cout<<this_thread::get_id()<<" :Odd thread Id"<<endl;
+    for(int i=0; i<num; i++)
+    {
+        if(i % 2 != 0)
+        {
+            sum += i;
+        }
+    }
+}
+
+int count = 0;
+mutex mtx;
+
+void increment()
+{
+    for(int i=0; i<1'00'000; i++)
+    {
+        lock_guard<mutex> myMutex(mtx);
+        count++;
+    }
+}
+
+void sleepFuncNormal()
+{
+    for(int i=0; i<5; i++)
+    {
+        cout<<"NORMAL ONE"<<endl;
+        cout<<"Is it happening 5 times: "<<i<<endl;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+
+}
+
+void sleepFunc(promise<int> p)
+{
+    for(int i=0; i<5; i++)
+    {
+        cout<<"Is it happening 5 times: "<<i<<endl;
+        this_thread::sleep_for(chrono::milliseconds(100));
+    }
+    p.set_value(999);
+}
+
+
 int main()
 {
+    //multithreading section
+    auto start = chrono::steady_clock::now();
+    thread t1(printEven,100'000'000);
+    thread t2(printOdd,100'000'000);
+
+    t1.join();
+    t2.join();
+
+    auto end = chrono::steady_clock::now();
+
+    auto duration = chrono::duration_cast<chrono::milliseconds>(end - start);
+
+    cout<<"Multithread Time(ms): "<<duration.count()<<endl;
+
+    // Normal Section
+    auto start1 = chrono::steady_clock::now();
+    printEven(100'000'000);
+    printOdd(100'000'000);
+
+    auto end1 = chrono::steady_clock::now();
+
+    auto duration1 = chrono::duration_cast<chrono::milliseconds>(end1 - start1);
+
+    cout<<"Normal Time(ms): "<<duration1.count()<<endl;
+
+    //Race Condition
+    thread t3(increment);
+    thread t4(increment);
+
+    t3.join();
+    t4.join();
+
+    cout<<count<<" :Shared variable count"<<endl;
+
+    //Fire-and-forget thread detach()
+    thread t5(sleepFuncNormal);
+    t5.detach(); //Here if main finishes t5 can't complete it's 5 operations
+    // See thread needs either join or detach
+
+    // C++ don't have exact QFutureWatcher mechanism we need to
+    // Implement it by using Conditional variable (Queue)
+    // But we have promise and future with that also we can achieve some
+    // But this thing is used when you want to get result from worker thread
+    promise<int> p;
+    future<int> f = p.get_future();
+
+    thread t6(sleepFunc,move(p));
+
+    int result5 = f.get();
+    t6.join();
+    cout<<result5<<" :result from thread"<<endl;
+
+
+    // Singleton
+    Singleton &s1 = Singleton::getInstance();
+    s1.method();
+
+    //DI + aggregation
+    Energy e1;
+
+    Lion l1;
+    l1.kingOfJungle(&e1);
+
+    Lion l2;
+    l2.kingOfJungle(&e1);
+
+    //Composition
+    Car c1;
+    c1.start();
+
+
+    //Runtime polymorphism
+    Animal *a = new Cat();
+    a->speak();
+
+    delete a;
+
+    //Rule Of 5
+    Buffer b1("zubair");
+    b1.print();
+
+    Buffer b2 = "Rahul";
+    b2.print();
+
+    b2 = b1;
+    b2.print();
+    b1.print();
+
+    cout<<"###"<<endl;
+    Buffer b3 = move(b2);
+    b3.print();
+    b2.print();
+
+    b2 = move(b1);
+    b2.print();
+
     // Problem 1 : Palindrome check using recursion
     string name = "malayalam";
     bool result = checkPalindrome(name,0,name.length()-1);
@@ -100,7 +439,37 @@ int main()
     }
     cout<<endl;
 
+    // Problem 4 : finding frequency of letters
+    string name1 = "madam";
 
+    for (size_t i=0; i<name1.length(); i++)
+    {
+        bool alreadyDone = false;
+
+        for(size_t k=0; k<i; k++)
+        {
+            if(name1[i] == name1[k])
+            {
+                alreadyDone = true;
+                break;
+            }
+        }
+
+        if(alreadyDone)
+            continue;
+
+        int count1 = 0;
+
+        for (size_t j = 0; j < name1.length(); j++)
+        {
+            if (name1[i] == name1[j])
+                count1++;
+        }
+
+        cout << name1[i] << " " << count1 << endl;
+    }
+
+    cout << "END OF MAIN" << endl;
     return 0;
 }
 
