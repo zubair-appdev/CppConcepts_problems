@@ -4,6 +4,7 @@
 #include <cstring>
 #include <thread>
 #include <mutex>
+#include <algorithm>
 
 #include <future>
 
@@ -228,7 +229,7 @@ void printOdd(int num)
     }
 }
 
-int count = 0;
+int count1 = 0;
 mutex mtx;
 
 void increment()
@@ -236,7 +237,7 @@ void increment()
     for(int i=0; i<1'00'000; i++)
     {
         lock_guard<mutex> myMutex(mtx);
-        count++;
+        count1++;
     }
 }
 
@@ -296,7 +297,7 @@ int main()
     t3.join();
     t4.join();
 
-    cout<<count<<" :Shared variable count"<<endl;
+    cout<<count1<<" :Shared variable count"<<endl;
 
     //Fire-and-forget thread detach()
     thread t5(sleepFuncNormal);
@@ -579,9 +580,43 @@ int main()
 
     cout<<iterations<<" :iterations"<<endl;
 
-    //continue from here ... prove gpt is wrong here for above problem for two pointer.
+
+    //problem-9 Shift one element in Array
+    vector<int> numArr = {10,20,30,40};
+    int jnum = numArr.size() - 1;
+
+    int temp1 = numArr[0];
+    numArr[0] = numArr[jnum-1];
+
+    for(size_t i=1; i<numArr.size(); i++)
+    {
+       int temp2 = numArr[i];
+       numArr[i] = temp1;
+       temp1 = temp2;
+    }
+
+    for(auto i : numArr)
+    {
+        cout<<i<<" ";
+    }
+    cout<<endl;
+
+
+    // About rotate() concept
+    vector<int> primes1 = {2,3,5,7,11,13};
+
+    rotate(primes1.begin(),primes1.end()-3,primes1.end());
+
+    for(int i : primes1)
+    {
+        cout<<"primes: "<<i<<" ";
+    }
+
+    cout<<endl;
 
     cout << "END OF MAIN" << endl;
+
+
     return 0;
 }
 
