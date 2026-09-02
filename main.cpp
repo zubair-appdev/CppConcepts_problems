@@ -614,9 +614,54 @@ int main()
 
     cout<<endl;
 
+
+    //problem-10 sliding window problem -- brute force O(nxk)
+    vector<int> snums = {1,2,1,4,5,3,2,1,1};
+    int window = 3;
+    int maxWindow = 0;
+    int repetetion = snums.size() - window + 1;
+    int resultWin = 0;
+
+    for(int i=0; i<repetetion; i++)
+    {
+        for(int j=i; j<window+i; j++)
+        {
+            maxWindow += snums[j];
+        }
+        cout<<maxWindow<<" :maxWindow"<<endl;
+
+        if(maxWindow > resultWin)
+        {
+            resultWin = maxWindow;
+        }
+
+        maxWindow = 0;
+    }
+
+    cout<<resultWin<<" :resultWin"<<endl;
+
+    //problem-11 sliding window problem -- optimized O(n)
+    vector<int> onums = {1,2,1,4,5,3,2,1,1};
+    int firstWindow = onums[0] + onums[1] + onums[2];
+    int maxNum = 0;
+
+    int resultOp = 0;
+
+    for(size_t i=3; i<onums.size(); i++)
+    {
+       maxNum = (firstWindow - onums[i-3]) + onums[i];
+       cout<<maxNum<<" :maxNum"<<endl;
+       firstWindow = maxNum;
+
+       if(resultOp < maxNum)
+       {
+           resultOp = maxNum;
+       }
+    }
+
+    cout<<resultOp<<" :resultOp"<<endl;
+
     cout << "END OF MAIN" << endl;
-
-
     return 0;
 }
 
