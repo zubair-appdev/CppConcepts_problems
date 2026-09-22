@@ -640,7 +640,29 @@ int main()
 
     cout<<resultWin<<" :resultWin"<<endl;
 
-    //problem-11 sliding window problem -- optimized O(n)
+    // ============================================================
+    // Problem-11: Fixed Sliding Window
+    //
+    // Given an array, find the maximum sum of any 3 consecutive
+    // elements.
+    //
+    // Window size = 3
+    //
+    // Instead of recalculating every 3-element window from scratch,
+    // slide the window by:
+    //   1. Remove the element leaving the window.
+    //   2. Add the new element entering the window.
+    //
+    // This avoids repeated calculations and gives O(n) time.
+    //
+    // Example:
+    // {1,2,1,4,5,3,2,1,1}
+    // Maximum 3-element sum = 12  -> {4,5,3}
+    //
+    // Time Complexity  : O(n)
+    // Space Complexity : O(1)
+    // ============================================================
+
     vector<int> onums = {1,2,1,4,5,3,2,1,1};
     int firstWindow = onums[0] + onums[1] + onums[2];
     int maxNum = 0;
@@ -660,6 +682,37 @@ int main()
     }
 
     cout<<resultOp<<" :resultOp"<<endl;
+
+    //problem-12 Variable sliding window problem -- optimized O(n) : actual n+n = 2n
+    // need to find target 7 in small window
+
+    vector<int> vnums = {2,3,1,2,4,3};
+
+    int vtarget = 7, vi = 0, vj = 0, vsum = 0, vwindow = 0;
+
+    while(vi < (int)vnums.size())
+    {
+        if(vsum < vtarget)
+        {
+            vsum += vnums[vi];
+            vi++;
+            vwindow++;
+            cout<<vsum<<" :vsum<"<<endl;
+        }
+
+        if(vsum >= vtarget)
+        {
+            vsum = vsum - vnums[vj];
+            vj++;
+            vwindow--;
+            cout<<vsum<<" :vsum>"<<endl;
+        }
+
+        if(vsum == vtarget)
+        {
+            cout<<vwindow<<" vwindow"<<endl;
+        }
+    }
 
     cout << "END OF MAIN" << endl;
     return 0;
