@@ -5,6 +5,8 @@
 #include <thread>
 #include <mutex>
 #include <algorithm>
+#include <unordered_map>
+#include <set>
 
 #include <future>
 
@@ -713,6 +715,56 @@ int main()
             cout<<vwindow<<" vwindow"<<endl;
         }
     }
+
+      //problem-13 Frequency checker using unordered_map and set
+    set<char> container;
+    string name = "mississippimppisi";
+    int count = 0;
+    for(size_t i=0; i<name.length(); i++)
+    {
+        if(container.find(name[i]) != container.end())
+        {
+            continue;
+        }
+        for(size_t j=0; j<name.length();j++)
+        {
+            if(name[i] == name[j])
+            {
+                count++;
+            }
+            
+        }
+        container.insert(name[i]);
+        cout<<name[i]<<" "<<count<<endl;
+        count = 0;
+    }
+    
+    cout<<endl;
+    
+    
+    unordered_map<char,int> freq;
+    for(auto j : name)
+    {
+        freq[j] = freq[j] + 1;
+    }
+    
+    for(auto i : freq)
+    {
+        cout<<i.first<<" "<<i.second<<endl;
+    }
+    
+    cout<<endl;
+    
+    unordered_map<char,bool> printed;
+    for(size_t i=0; i<name.length(); i++)
+    {
+        if(!printed[name[i]])
+        {
+            cout<<name[i]<<" "<<freq[name[i]]<<endl;
+            printed[name[i]] = true;
+        }
+    }
+    
 
     cout << "END OF MAIN" << endl;
     return 0;
