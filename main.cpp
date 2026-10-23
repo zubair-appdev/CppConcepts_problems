@@ -716,7 +716,9 @@ int main()
         }
     }
 
-      //problem-13 Frequency checker using unordered_map and set
+    //problem-13 Frequency checker using unordered_map and set
+    {
+
     set<char> container;
     string name = "mississippimppisi";
     int count = 0;
@@ -763,6 +765,8 @@ int main()
             cout<<name[i]<<" "<<freq[name[i]]<<endl;
             printed[name[i]] = true;
         }
+    }
+
     }
     
 
